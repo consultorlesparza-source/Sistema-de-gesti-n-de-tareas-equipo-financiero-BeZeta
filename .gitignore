@@ -1,0 +1,20 @@
+# Variables de entorno / secretos
+.env
+.env.*
+!.env.example
+
+# Dependencias
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Builds
+dist/
+build/
+*.log
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db

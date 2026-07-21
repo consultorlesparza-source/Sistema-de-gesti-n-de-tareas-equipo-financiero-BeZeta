@@ -7,7 +7,8 @@ Diseño completo en [`SISTEM~1.docx`](SISTEM~1.docx).
 ## Estado del proyecto
 
 - **Fase 1 — MVP (en construcción):** usuarios y roles, cargos, catálogo de tareas,
-  tareas con máquina de estados, subida de evidencia. ✅ Backend base funcionando.
+  tareas con máquina de estados, subida de evidencia. ✅ Backend y frontend funcionando
+  end-to-end (login, mis tareas, enviar a revisión, validar).
 - **Fase 2 — Automatización:** generación mensual automática y motor de notificaciones
   por correo (creación, aviso 3 días, vencimiento). Pendiente.
 - **Fase 3 — KPI y reportes:** tablero de indicadores y exportación. Pendiente.
@@ -17,7 +18,7 @@ Diseño completo en [`SISTEM~1.docx`](SISTEM~1.docx).
 - **Backend:** Python 3.12 + Django 6 + Django REST Framework + SimpleJWT.
 - **Base de datos:** SQLite en desarrollo (por defecto) / PostgreSQL en producción
   (configurable vía `DATABASE_URL`).
-- **Frontend:** React (a implementar).
+- **Frontend:** React 19 + TypeScript + Vite + React Router + Axios.
 
 ## Estructura
 
@@ -30,6 +31,12 @@ backend/
   tareas/            # instancias de tareas del periodo + máquina de estados + historial
   evidencias/        # archivos de respaldo por tarea
   notificaciones/    # registro de correos enviados (Fase 2)
+
+frontend/
+  src/api/           # cliente axios (JWT + refresh) y funciones por recurso
+  src/context/        # AuthContext (sesión, login/logout)
+  src/components/      # Layout, ProtectedRoute, EstadoBadge
+  src/pages/          # LoginPage, HomePage, TareasColaboradorPage, TareasGerentePage
 ```
 
 ## Cómo correr el backend en local
@@ -46,6 +53,19 @@ python manage.py runserver
 
 La API queda disponible en `http://127.0.0.1:8000/api/`, el admin en
 `http://127.0.0.1:8000/admin/`.
+
+## Cómo correr el frontend en local
+
+```powershell
+cd frontend
+npm install
+copy .env.example .env    # VITE_API_URL, por defecto http://127.0.0.1:8000/api
+npm run dev
+```
+
+Se abre en `http://localhost:5173/`. Requiere que el backend esté corriendo (ver
+arriba) y que `CORS_ALLOWED_ORIGINS` en el backend incluya `http://localhost:5173`
+(ya viene por defecto).
 
 ## Autenticación (API)
 

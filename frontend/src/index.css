@@ -1,0 +1,494 @@
+:root {
+  --color-bg: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-border: #e2e6ea;
+  --color-text: #1c2530;
+  --color-text-muted: #5b6773;
+  --color-primary: #1f4e8c;
+  --color-primary-hover: #163a6b;
+  --color-danger: #b3261e;
+  --color-danger-bg: #fdecea;
+
+  --color-pendiente: #6b7280;
+  --color-revision: #b45309;
+  --color-parcial: #a16207;
+  --color-entregado: #15803d;
+  --color-no-logrado: #b91c1c;
+  --color-vencida: #b91c1c;
+
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+button, input, select {
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+h1, h2, h3, h4 {
+  margin: 0 0 0.25rem 0;
+  color: var(--color-text);
+}
+
+/* Layout */
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.75rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.brand-mark {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--color-primary);
+}
+
+.brand-sub {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.app-header-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-weight: 600;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.app-main {
+  flex: 1;
+  padding: 1.75rem;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Botones */
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 0.55rem 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primario {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-primario:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.btn-secundario {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secundario:hover:not(:disabled) {
+  background: #e9edf1;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.btn-ghost:hover {
+  background: var(--color-bg);
+}
+
+/* Login */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #1f4e8c 0%, #0e2a4d 100%);
+}
+
+.login-card {
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-card h1 {
+  color: var(--color-primary);
+  font-size: 1.6rem;
+}
+
+.login-subtitle {
+  color: var(--color-text-muted);
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.campo input {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text);
+}
+
+.campo input:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+/* Páginas generales */
+
+.pagina-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.pagina-subtitulo {
+  color: var(--color-text-muted);
+  margin: 0.15rem 0 1.25rem 0;
+}
+
+.pagina-cargando,
+.estado-vacio {
+  color: var(--color-text-muted);
+  padding: 1.5rem 0;
+}
+
+.mensaje-error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.seccion {
+  margin-bottom: 1.75rem;
+}
+
+.seccion h2 {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.6rem;
+}
+
+/* Tarjetas de tarea (colaborador) */
+
+.lista-tareas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tarea-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tarea-card-vencida {
+  border-color: var(--color-vencida);
+}
+
+.tarea-card-cabecera {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tarea-meta {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: 0.15rem 0 0 0;
+}
+
+.tarea-card-cuerpo {
+  padding: 0 1.1rem 1.1rem 1.1rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.comentario-gerente {
+  background: #eef3fa;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.lista-evidencias {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.lista-evidencias a {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.lista-evidencias a:hover {
+  text-decoration: underline;
+}
+
+.evidencia-comentario {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.evidencia-anulada {
+  opacity: 0.55;
+}
+
+.form-evidencia {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.form-evidencia input[type="text"] {
+  flex: 1;
+  min-width: 160px;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.historial summary {
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.historial ul {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Vista Gerente */
+
+.filtros {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filtros label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.filtros select {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.tarjeta {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.form-grid select,
+.form-grid input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text);
+}
+
+.tabla-tareas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.fila-tarea {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.85rem 1.1rem;
+}
+
+.fila-tarea-vencida {
+  border-color: var(--color-vencida);
+}
+
+.fila-tarea-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.fila-tarea-acciones {
+  margin-top: 0.6rem;
+}
+
+.form-validar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.6rem;
+}
+
+.form-validar select,
+.form-validar input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.form-validar input[type="text"] {
+  flex: 1;
+  min-width: 160px;
+}
+
+/* Badges de estado */
+
+.badge-group {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+}
+
+.badge-pendiente { background: var(--color-pendiente); }
+.badge-revision { background: var(--color-revision); }
+.badge-parcial { background: var(--color-parcial); }
+.badge-entregado { background: var(--color-entregado); }
+.badge-no-logrado { background: var(--color-no-logrado); }
+.badge-vencida { background: var(--color-vencida); }
+
+@media (max-width: 640px) {
+  .app-main {
+    padding: 1rem;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .tarea-card-cabecera,
+  .fila-tarea-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

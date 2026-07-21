@@ -14,6 +14,11 @@ dist/
 build/
 *.log
 
+# Django
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+
 # Editor / OS
 .vscode/
 .DS_Store

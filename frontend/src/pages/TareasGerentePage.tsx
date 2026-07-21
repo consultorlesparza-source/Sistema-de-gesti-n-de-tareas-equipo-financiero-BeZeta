@@ -3,8 +3,9 @@ import { EstadoBadge } from "../components/EstadoBadge";
 import { crearTarea, listarTareas, validarTarea, type FiltrosTareas } from "../api/tareas";
 import { listarCatalogo } from "../api/catalogo";
 import { listarUsuarios } from "../api/usuarios";
+import { listarEvidenciasDeTarea } from "../api/evidencias";
 import { useAuth } from "../context/AuthContext";
-import type { CatalogoTarea, Estado, Tarea, Usuario } from "../types";
+import type { CatalogoTarea, Estado, Evidencia, Tarea, Usuario } from "../types";
 
 function formatearFecha(fecha: string | null) {
   if (!fecha) return "Sin fecha";
@@ -224,11 +225,26 @@ function FilaTarea({
   onValidada: (t: Tarea) => void;
   puedeValidar: boolean;
 }) {
-  const [abierta, setAbierta] = useState(false);
+  const [expandida, setExpandida] = useState(false);
+  const [evidencias, setEvidencias] = useState<Evidencia[]>([]);
+  const [cargandoEvidencias, setCargandoEvidencias] = useState(false);
+  const [errorEvidencias, setErrorEvidencias] = useState<string | null>(null);
+
+  const [formularioAbierto, setFormularioAbierto] = useState(false);
   const [estadoElegido, setEstadoElegido] = useState<"entregado" | "parcial" | "no_logrado">("entregado");
   const [comentario, setComentario] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!expandida) return;
+    setCargandoEvidencias(true);
+    setErrorEvidencias(null);
+    listarEvidenciasDeTarea(tarea.id)
+      .then(setEvidencias)
+      .catch(() => setErrorEvidencias("No se pudo cargar la evidencia de esta tarea."))
+      .finally(() => setCargandoEvidencias(false));
+  }, [expandida, tarea.id]);
 
   async function onValidar(e: FormEvent) {
     e.preventDefault();
@@ -237,7 +253,7 @@ function FilaTarea({
     try {
       const actualizada = await validarTarea(tarea.id, estadoElegido, comentario);
       onValidada(actualizada);
-      setAbierta(false);
+      setFormularioAbierto(false);
       setComentario("");
     } catch {
       setError("No se pudo validar la tarea.");
@@ -246,9 +262,11 @@ function FilaTarea({
     }
   }
 
+  const evidenciasVigentes = evidencias.filter((e) => !e.anulada);
+
   return (
     <article className={`fila-tarea ${tarea.vencida ? "fila-tarea-vencida" : ""}`}>
-      <div className="fila-tarea-info">
+      <button type="button" className="fila-tarea-info fila-tarea-toggle" onClick={() => setExpandida((v) => !v)}>
         <div>
           <strong>{tarea.catalogo_nombre}</strong>
           <p className="tarea-meta">
@@ -257,37 +275,72 @@ function FilaTarea({
           </p>
         </div>
         <EstadoBadge estado={tarea.estado} vencida={tarea.vencida} />
-      </div>
+      </button>
 
-      {puedeValidar && tarea.estado === "en_revision" && (
-        <div className="fila-tarea-acciones">
-          <button type="button" className="btn btn-secundario" onClick={() => setAbierta((v) => !v)}>
-            {abierta ? "Cancelar" : "Validar"}
-          </button>
+      {expandida && (
+        <div className="fila-tarea-cuerpo">
+          {tarea.comentario_gerente && (
+            <p className="comentario-gerente">
+              <strong>Comentario del Gerente:</strong> {tarea.comentario_gerente}
+            </p>
+          )}
+
+          <h4>Evidencia</h4>
+          {cargandoEvidencias && <p>Cargando evidencia…</p>}
+          {errorEvidencias && <p className="mensaje-error">{errorEvidencias}</p>}
+          {!cargandoEvidencias && evidenciasVigentes.length === 0 && (
+            <p className="estado-vacio">El colaborador aún no ha subido evidencia.</p>
+          )}
+          <ul className="lista-evidencias">
+            {evidenciasVigentes.map((ev) => (
+              <li key={ev.id}>
+                <a href={ev.archivo} target="_blank" rel="noreferrer">
+                  {ev.nombre_archivo}
+                </a>
+                {ev.comentario && <span className="evidencia-comentario"> — {ev.comentario}</span>}
+                <span className="evidencia-comentario">
+                  {" "}
+                  ({new Date(ev.fecha_subida).toLocaleString("es-CL")})
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          {puedeValidar && tarea.estado === "en_revision" && (
+            <div className="fila-tarea-acciones">
+              <button
+                type="button"
+                className="btn btn-secundario"
+                onClick={() => setFormularioAbierto((v) => !v)}
+              >
+                {formularioAbierto ? "Cancelar" : "Validar"}
+              </button>
+            </div>
+          )}
+
+          {formularioAbierto && (
+            <form className="form-validar" onSubmit={onValidar}>
+              <select
+                value={estadoElegido}
+                onChange={(e) => setEstadoElegido(e.target.value as typeof estadoElegido)}
+              >
+                <option value="entregado">Entregado</option>
+                <option value="parcial">Parcialmente entregado</option>
+                <option value="no_logrado">No logrado</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Comentario"
+                value={comentario}
+                onChange={(e) => setComentario(e.target.value)}
+              />
+              <button type="submit" className="btn btn-primario" disabled={enviando}>
+                {enviando ? "Guardando…" : "Confirmar"}
+              </button>
+              {error && <p className="mensaje-error">{error}</p>}
+            </form>
+          )}
         </div>
-      )}
-
-      {abierta && (
-        <form className="form-validar" onSubmit={onValidar}>
-          <select
-            value={estadoElegido}
-            onChange={(e) => setEstadoElegido(e.target.value as typeof estadoElegido)}
-          >
-            <option value="entregado">Entregado</option>
-            <option value="parcial">Parcialmente entregado</option>
-            <option value="no_logrado">No logrado</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Comentario"
-            value={comentario}
-            onChange={(e) => setComentario(e.target.value)}
-          />
-          <button type="submit" className="btn btn-primario" disabled={enviando}>
-            {enviando ? "Guardando…" : "Confirmar"}
-          </button>
-          {error && <p className="mensaje-error">{error}</p>}
-        </form>
       )}
     </article>
   );

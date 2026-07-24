@@ -86,6 +86,31 @@ arriba) y que `CORS_ALLOWED_ORIGINS` en el backend incluya `http://localhost:517
 | — validar | `POST /api/tareas/{id}/validar/` | Solo Gerente: `entregado` / `parcial` / `no_logrado` |
 | Evidencias | `/api/evidencias/` | Sin `DELETE`; solo se anula (`anulada=true`) |
 
+## Deploy en Render
+
+El repo incluye [`render.yaml`](render.yaml) (Blueprint) que crea el servicio web y una
+base de datos Postgres automáticamente:
+
+1. En Render: **New +** → **Blueprint** → selecciona este repositorio → Apply.
+2. Cuando termine el primer deploy, entra al servicio → **Environment** y completa:
+   - `ALLOWED_HOSTS`: el hostname que te asignó Render (ej. `bezeta-tareas-backend.onrender.com`).
+   - `CORS_ALLOWED_ORIGINS`: la URL del frontend (ej. `https://tu-frontend.onrender.com`).
+3. Crea el superusuario de producción: en el servicio → **Shell** → `python manage.py createsuperuser`.
+
+**Si ya creaste el servicio manualmente (sin Blueprint):** el error típico es
+`Could not open requirements file` porque Render busca `requirements.txt` en la raíz
+del repo. En **Settings** del servicio, configura:
+- **Root Directory:** `backend`
+- **Build Command:** `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
+- **Start Command:** `gunicorn config.wsgi:application`
+- Variables de entorno: `SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS`, `DATABASE_URL`
+  (de un Postgres de Render), `CORS_ALLOWED_ORIGINS`.
+
+**Limitación conocida:** el disco de Render es efímero (Fase 1). Los archivos de
+evidencia subidos se guardan en `MEDIA_ROOT` local y **se pierden en cada deploy**.
+Antes de usar esto en producción real hay que migrar a almacenamiento de objetos
+(S3 / Google Cloud Storage), tal como recomienda la sección 7 del documento de diseño.
+
 ## Roles
 
 - **gerente**: acceso total, valida estados finales de las tareas.

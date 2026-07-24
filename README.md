@@ -86,16 +86,27 @@ arriba) y que `CORS_ALLOWED_ORIGINS` en el backend incluya `http://localhost:517
 | — validar | `POST /api/tareas/{id}/validar/` | Solo Gerente: `entregado` / `parcial` / `no_logrado` |
 | Evidencias | `/api/evidencias/` | Sin `DELETE`; solo se anula (`anulada=true`) |
 
-## Deploy en Render
+## Deploy en Render + Supabase
 
-El repo incluye [`render.yaml`](render.yaml) (Blueprint) que crea **tres** recursos a la vez:
-el backend (Django), el frontend (sitio estático) y una base de datos Postgres gratuita.
+La base de datos de producción es **Supabase** (Postgres administrado), no el Postgres
+de Render. El repo incluye [`render.yaml`](render.yaml) (Blueprint) que crea el backend
+(Django) y el frontend (sitio estático); la base de datos se conecta por variable de
+entorno.
 
-1. En Render: **New +** → **Blueprint** → selecciona este repositorio → **Apply**.
-   Como `ALLOWED_HOSTS` ya se detecta solo, Render te pedirá completar solo dos
-   valores durante la creación (`CORS_ALLOWED_ORIGINS` y `VITE_API_URL`) — déjalos
-   en blanco por ahora, se llenan en el paso 3 porque ninguna de las dos URLs
-   existe todavía.
+### Base de datos (Supabase)
+
+1. En Supabase: **Project Settings → Database → Connect**.
+2. Copia la connection string de **"Session pooler"** (⚠️ no "Direct connection": es IPv6
+   y Render no la puede alcanzar; tampoco "Transaction pooler": no soporta prepared
+   statements y rompe cosas del ORM). Formato:
+   `postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres`
+3. Esa URL completa va en la variable `DATABASE_URL` del backend en Render.
+
+### Backend + frontend (Render)
+
+1. **New +** → **Blueprint** → selecciona este repositorio → **Apply**. Te va a pedir
+   completar `DATABASE_URL` (pega la connection string de Supabase), `CORS_ALLOWED_ORIGINS`
+   y `VITE_API_URL` — deja estas dos últimas en blanco por ahora, ninguna URL existe todavía.
 2. Cuando ambos servicios terminen de desplegar, anota sus URLs reales desde el
    dashboard de Render (arriba de cada servicio, con forma
    `https://<nombre-del-servicio>.onrender.com` — Render le agrega un sufijo
@@ -114,8 +125,8 @@ del repo. En **Settings** del servicio, configura:
 - **Root Directory:** `backend`
 - **Build Command:** `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
 - **Start Command:** `gunicorn config.wsgi:application`
-- Variables de entorno: `SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS`, `DATABASE_URL`
-  (de un Postgres de Render), `CORS_ALLOWED_ORIGINS`.
+- Variables de entorno: `SECRET_KEY`, `DEBUG=False`, `DATABASE_URL` (connection string de
+  Supabase, ver arriba), `CORS_ALLOWED_ORIGINS`.
 
 **Limitación conocida:** el disco de Render es efímero (Fase 1). Los archivos de
 evidencia subidos se guardan en `MEDIA_ROOT` local y **se pierden en cada deploy**.

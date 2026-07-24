@@ -1,9 +1,3 @@
-databases:
-  - name: bezeta-tareas-db
-    plan: free
-    databaseName: bezeta_tareas
-    user: bezeta_tareas
-
 services:
   - type: web
     name: bezeta-tareas-backend
@@ -23,9 +17,8 @@ services:
         value: ""
         sync: false
       - key: DATABASE_URL
-        fromDatabase:
-          name: bezeta-tareas-db
-          property: connectionString
+        value: ""
+        sync: false
 
   - type: web
     name: bezeta-tareas-frontend

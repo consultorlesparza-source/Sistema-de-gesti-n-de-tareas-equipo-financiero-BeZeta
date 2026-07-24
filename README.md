@@ -88,14 +88,25 @@ arriba) y que `CORS_ALLOWED_ORIGINS` en el backend incluya `http://localhost:517
 
 ## Deploy en Render
 
-El repo incluye [`render.yaml`](render.yaml) (Blueprint) que crea el servicio web y una
-base de datos Postgres automáticamente:
+El repo incluye [`render.yaml`](render.yaml) (Blueprint) que crea **tres** recursos a la vez:
+el backend (Django), el frontend (sitio estático) y una base de datos Postgres gratuita.
 
-1. En Render: **New +** → **Blueprint** → selecciona este repositorio → Apply.
-2. Cuando termine el primer deploy, entra al servicio → **Environment** y completa:
-   - `ALLOWED_HOSTS`: el hostname que te asignó Render (ej. `bezeta-tareas-backend.onrender.com`).
-   - `CORS_ALLOWED_ORIGINS`: la URL del frontend (ej. `https://tu-frontend.onrender.com`).
-3. Crea el superusuario de producción: en el servicio → **Shell** → `python manage.py createsuperuser`.
+1. En Render: **New +** → **Blueprint** → selecciona este repositorio → **Apply**.
+   Como `ALLOWED_HOSTS` ya se detecta solo, Render te pedirá completar solo dos
+   valores durante la creación (`CORS_ALLOWED_ORIGINS` y `VITE_API_URL`) — déjalos
+   en blanco por ahora, se llenan en el paso 3 porque ninguna de las dos URLs
+   existe todavía.
+2. Cuando ambos servicios terminen de desplegar, anota sus URLs reales desde el
+   dashboard de Render (arriba de cada servicio, con forma
+   `https://<nombre-del-servicio>.onrender.com` — Render le agrega un sufijo
+   aleatorio solo si el nombre ya está tomado por otra cuenta).
+3. Cruza las URLs entre los dos servicios (**Environment** → editar variable → **Save Changes**,
+   lo que dispara un redeploy automático):
+   - En **bezeta-tareas-backend**: `CORS_ALLOWED_ORIGINS` = URL del frontend (sin `/` final).
+   - En **bezeta-tareas-frontend**: `VITE_API_URL` = URL del backend + `/api` (ej.
+     `https://bezeta-tareas-backend.onrender.com/api`).
+4. Crea el superusuario de producción: en **bezeta-tareas-backend** → **Shell** →
+   `python manage.py createsuperuser`.
 
 **Si ya creaste el servicio manualmente (sin Blueprint):** el error típico es
 `Could not open requirements file` porque Render busca `requirements.txt` en la raíz

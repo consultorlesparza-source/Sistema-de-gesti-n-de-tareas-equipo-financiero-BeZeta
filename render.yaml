@@ -1,25 +1,8 @@
-services:
-  - type: web
-    name: bezeta-tareas-backend
-    runtime: python
-    plan: free
-    rootDir: backend
-    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate"
-    startCommand: "gunicorn config.wsgi:application"
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.12.10
-      - key: SECRET_KEY
-        generateValue: true
-      - key: DEBUG
-        value: "False"
-      - key: CORS_ALLOWED_ORIGINS
-        value: ""
-        sync: false
-      - key: DATABASE_URL
-        value: ""
-        sync: false
+# Por ahora solo se despliega el frontend (sin backend ni base de datos), para
+# poder visualizar la interfaz. El servicio de backend (Django + Postgres/Supabase)
+# se vuelve a agregar aqui cuando se retome esa parte del despliegue.
 
+services:
   - type: web
     name: bezeta-tareas-frontend
     runtime: static

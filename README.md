@@ -86,14 +86,29 @@ arriba) y que `CORS_ALLOWED_ORIGINS` en el backend incluya `http://localhost:517
 | — validar | `POST /api/tareas/{id}/validar/` | Solo Gerente: `entregado` / `parcial` / `no_logrado` |
 | Evidencias | `/api/evidencias/` | Sin `DELETE`; solo se anula (`anulada=true`) |
 
-## Deploy en Render + Supabase
+## Deploy en Render
 
-La base de datos de producción es **Supabase** (Postgres administrado), no el Postgres
-de Render. El repo incluye [`render.yaml`](render.yaml) (Blueprint) que crea el backend
-(Django) y el frontend (sitio estático); la base de datos se conecta por variable de
-entorno.
+### Fase actual: solo frontend (sin backend ni base de datos)
 
-### Base de datos (Supabase)
+Por ahora [`render.yaml`](render.yaml) solo despliega el frontend como sitio estático,
+para poder visualizar la interfaz en una URL pública. **Login y guardado de tareas no
+van a funcionar todavía** — eso requiere el backend desplegado (ver más abajo).
+
+1. Si tienes un servicio de backend fallando en Render (el error
+   `Could not open requirements file`), bórralo por ahora: **Settings** → al final →
+   **Delete Web Service**. No es necesario mientras solo probamos el frontend.
+2. **New +** → **Blueprint** → selecciona este repositorio → **Apply**. Solo va a
+   pedirte `VITE_API_URL` — déjalo en blanco (no hay backend todavía).
+3. Cuando termine, Render te muestra la URL pública del frontend, con la forma
+   `https://bezeta-tareas-frontend.onrender.com`.
+
+### Fase siguiente: backend + base de datos (cuando se retome)
+
+La base de datos de producción va a ser **Supabase** (Postgres administrado), no el
+Postgres de Render. El servicio de backend se vuelve a agregar a `render.yaml` en ese
+momento (Django + gunicorn + whitenoise, ya preparado en `backend/`).
+
+#### Base de datos (Supabase)
 
 1. En Supabase: **Project Settings → Database → Connect**.
 2. Copia la connection string de **"Session pooler"** (⚠️ no "Direct connection": es IPv6
@@ -102,8 +117,10 @@ entorno.
    `postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres`
 3. Esa URL completa va en la variable `DATABASE_URL` del backend en Render.
 
-### Backend + frontend (Render)
+#### Backend + frontend (Render)
 
+0. Antes de aplicar el Blueprint, hay que volver a agregar el servicio de backend a
+   `render.yaml` (se puede pedir en la conversación cuando se retome esta fase).
 1. **New +** → **Blueprint** → selecciona este repositorio → **Apply**. Te va a pedir
    completar `DATABASE_URL` (pega la connection string de Supabase), `CORS_ALLOWED_ORIGINS`
    y `VITE_API_URL` — deja estas dos últimas en blanco por ahora, ninguna URL existe todavía.
